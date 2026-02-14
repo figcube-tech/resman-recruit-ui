@@ -7,7 +7,25 @@ const BASE_PATH = '/auth';
 export const authApi = {
   login: async (credentials: LoginCredentials): Promise<ApiResponse<{ user: User; tokens: AuthTokens }>> => {
     const { data } = await apiClient.post(`${BASE_PATH}/login`, credentials);
-    return data;
+    
+    // Transform the API response to match the expected format
+    const transformedData = {
+      user: {
+        ...data.user,
+        // Add a computed name field from firstName and lastName
+        name: `${data.user.firstName} ${data.user.lastName}`,
+      } as User,
+      tokens: {
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+      } as AuthTokens,
+    };
+    
+    return {
+      data: transformedData,
+      message: 'Login successful',
+      success: true,
+    };
   },
 
   logout: async (): Promise<void> => {

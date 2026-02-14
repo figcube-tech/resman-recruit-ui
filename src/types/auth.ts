@@ -1,9 +1,17 @@
 export interface User {
-  id: string;
+  id: number | string;
   email: string;
-  name: string;
-  role: 'admin' | 'recruiter' | 'hiring_manager' | 'viewer';
+  firstName: string;
+  lastName: string;
+  name?: string;
+  role: string;
+  department?: string | null;
+  company?: string | null;
+  phone?: string;
+  active?: boolean;
   avatar?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface LoginCredentials {
