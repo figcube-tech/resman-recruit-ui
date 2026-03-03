@@ -1,29 +1,34 @@
-'use client';
+"use client";
 
-import { useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { useJobs, useDeleteJob } from '@/hooks/useJobs';
-import { useDebounce } from '@/hooks/useDebounce';
-import { usePagination } from '@/hooks/usePagination';
-import PageHeader from '@/components/layout/PageHeader';
-import Button from '@/components/ui/Button';
-import DataTable, { Column } from '@/components/ui/DataTable';
-import Pagination from '@/components/ui/Pagination';
-import Badge from '@/components/ui/Badge';
-import ConfirmDialog from '@/components/ui/ConfirmDialog';
-import JobFilters from '@/components/jobs/JobFilters';
-import { Job, JobFilters as JobFiltersType } from '@/types';
-import { JOB_STATUS_COLORS, JOB_STATUS_LABELS, JOB_TYPE_LABELS, EXPERIENCE_LEVEL_LABELS } from '@/lib/constants';
-import { formatDate, formatCurrency } from '@/lib/utils';
-import { Plus, Pencil, Trash2, Eye } from 'lucide-react';
-import Link from 'next/link';
+import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { useJobs, useDeleteJob } from "@/hooks/useJobs";
+import { useDebounce } from "@/hooks/useDebounce";
+import { usePagination } from "@/hooks/usePagination";
+import PageHeader from "@/components/layout/PageHeader";
+import Button from "@/components/ui/Button";
+import DataTable, { Column } from "@/components/ui/DataTable";
+import Pagination from "@/components/ui/Pagination";
+import Badge from "@/components/ui/Badge";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import JobFilters from "@/components/jobs/JobFilters";
+import { Job, JobFilters as JobFiltersType } from "@/types";
+import {
+  JOB_STATUS_COLORS,
+  JOB_STATUS_LABELS,
+  JOB_TYPE_LABELS,
+  EXPERIENCE_LEVEL_LABELS,
+} from "@/lib/constants";
+import { formatDate, formatCurrency } from "@/lib/utils";
+import { Plus, Pencil, Trash2, Eye } from "lucide-react";
+import Link from "next/link";
 
 export default function JobsPage() {
   const router = useRouter();
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [filters, setFilters] = useState<JobFiltersType>({});
-  const [sortBy, setSortBy] = useState('createdAt');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const { page, limit, goToPage } = usePagination();
   const debouncedSearch = useDebounce(search);
@@ -41,13 +46,13 @@ export default function JobsPage() {
   const handleSort = useCallback(
     (key: string) => {
       if (sortBy === key) {
-        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
       } else {
         setSortBy(key);
-        setSortOrder('asc');
+        setSortOrder("asc");
       }
     },
-    [sortBy, sortOrder]
+    [sortBy, sortOrder],
   );
 
   const handleDelete = async () => {
@@ -59,12 +64,15 @@ export default function JobsPage() {
 
   const columns: Column<Job>[] = [
     {
-      key: 'title',
-      header: 'Job Title',
+      key: "title",
+      header: "Job Title",
       sortable: true,
       render: (job) => (
         <div>
-          <Link href={`/jobs/${job.id}`} className="font-medium text-blue-600 hover:text-blue-700">
+          <Link
+            href={`/jobs/${job.id}`}
+            className="font-medium text-blue-600 hover:text-blue-700"
+          >
             {job.title}
           </Link>
           <p className="text-xs text-gray-500">{job.department}</p>
@@ -72,35 +80,42 @@ export default function JobsPage() {
       ),
     },
     {
-      key: 'location',
-      header: 'Location',
+      key: "location",
+      header: "Location",
       sortable: true,
     },
     {
-      key: 'jobType',
-      header: 'Type',
-      render: (job) => <span className="text-sm">{JOB_TYPE_LABELS[job.jobType]}</span>,
+      key: "jobType",
+      header: "Type",
+      render: (job) => (
+        <span className="text-sm">{JOB_TYPE_LABELS[job.jobType]}</span>
+      ),
     },
     {
-      key: 'experienceLevel',
-      header: 'Level',
-      render: (job) => <span className="text-sm">{EXPERIENCE_LEVEL_LABELS[job.experienceLevel]}</span>,
+      key: "experienceLevel",
+      header: "Level",
+      render: (job) => (
+        <span className="text-sm">
+          {EXPERIENCE_LEVEL_LABELS[job.experienceLevel]}
+        </span>
+      ),
     },
     {
-      key: 'salary',
-      header: 'Salary Range',
+      key: "salary",
+      header: "Salary Range",
       render: (job) =>
         job.salaryMin && job.salaryMax ? (
           <span className="text-sm">
-            {formatCurrency(job.salaryMin, job.currency)} - {formatCurrency(job.salaryMax, job.currency)}
+            {formatCurrency(job.salaryMin, job.currency)} -{" "}
+            {formatCurrency(job.salaryMax, job.currency)}
           </span>
         ) : (
           <span className="text-sm text-gray-400">Not specified</span>
         ),
     },
     {
-      key: 'status',
-      header: 'Status',
+      key: "status",
+      header: "Status",
       sortable: true,
       render: (job) => (
         <Badge variant={JOB_STATUS_COLORS[job.status]}>
@@ -109,31 +124,44 @@ export default function JobsPage() {
       ),
     },
     {
-      key: 'createdAt',
-      header: 'Posted',
+      key: "createdAt",
+      header: "Posted",
       sortable: true,
-      render: (job) => <span className="text-sm text-gray-500">{formatDate(job.createdAt)}</span>,
+      render: (job) => (
+        <span className="text-sm text-gray-500">
+          {formatDate(job.createdAt)}
+        </span>
+      ),
     },
     {
-      key: 'actions',
-      header: '',
-      className: 'w-24',
+      key: "actions",
+      header: "",
+      className: "w-24",
       render: (job) => (
         <div className="flex items-center gap-1">
           <button
-            onClick={(e) => { e.stopPropagation(); router.push(`/jobs/${job.id}`); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/jobs/${job.id}`);
+            }}
             className="rounded p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
           >
             <Eye className="h-4 w-4" />
           </button>
           <button
-            onClick={(e) => { e.stopPropagation(); router.push(`/jobs/${job.id}/edit`); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/jobs/${job.id}/edit`);
+            }}
             className="rounded p-1.5 text-gray-400 hover:bg-gray-100 hover:text-blue-600"
           >
             <Pencil className="h-4 w-4" />
           </button>
           <button
-            onClick={(e) => { e.stopPropagation(); setDeleteId(job.id); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setDeleteId(job.id);
+            }}
             className="rounded p-1.5 text-gray-400 hover:bg-gray-100 hover:text-red-600"
           >
             <Trash2 className="h-4 w-4" />

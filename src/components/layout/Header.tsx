@@ -36,7 +36,7 @@ export default function Header() {
             className="flex items-center gap-3 rounded-lg p-1.5 hover:bg-gray-100"
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-sm font-medium text-white">
-              {user ? getInitials(user.name) : <User className="h-4 w-4" />}
+              {user && user.name ? getInitials(user.name) : <User className="h-4 w-4" />}
             </div>
             {user && (
               <div className="hidden text-left sm:block">

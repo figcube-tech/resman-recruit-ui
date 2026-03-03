@@ -1,13 +1,55 @@
-import apiClient from './client';
-import { LoginCredentials, AuthTokens, User } from '@/types';
-import { ApiResponse } from '@/types';
+import apiClient from "./client";
+import { LoginCredentials, AuthTokens, User } from "@/types";
+import { ApiResponse } from "@/types";
 
-const BASE_PATH = '/auth';
+const BASE_PATH = "/auth";
+
+export interface RegisterData {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+  phone?: string;
+  companyId?: string;
+  departmentId?: string;
+}
 
 export const authApi = {
-  login: async (credentials: LoginCredentials): Promise<ApiResponse<{ user: User; tokens: AuthTokens }>> => {
+  register: async (data: RegisterData): Promise<ApiResponse<User>> => {
+    const { data: responseData } = await apiClient.post(
+      `${BASE_PATH}/register`,
+      {
+        email: data.email,
+        password: data.password,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        role: data.role,
+        phone: data.phone,
+        companyId: data.companyId ? parseInt(data.companyId) : undefined,
+        departmentId: data.departmentId
+          ? parseInt(data.departmentId)
+          : undefined,
+      },
+    );
+
+    const transformedUser = {
+      ...responseData,
+      name: `${responseData.firstName} ${responseData.lastName}`,
+    } as User;
+
+    return {
+      data: transformedUser,
+      message: "Registration successful",
+      success: true,
+    };
+  },
+
+  login: async (
+    credentials: LoginCredentials,
+  ): Promise<ApiResponse<{ user: User; tokens: AuthTokens }>> => {
     const { data } = await apiClient.post(`${BASE_PATH}/login`, credentials);
-    
+
     // Transform the API response to match the expected format
     const transformedData = {
       user: {
@@ -20,10 +62,10 @@ export const authApi = {
         refreshToken: data.refreshToken,
       } as AuthTokens,
     };
-    
+
     return {
       data: transformedData,
-      message: 'Login successful',
+      message: "Login successful",
       success: true,
     };
   },
@@ -32,8 +74,12 @@ export const authApi = {
     await apiClient.post(`${BASE_PATH}/logout`);
   },
 
-  refreshToken: async (refreshToken: string): Promise<ApiResponse<AuthTokens>> => {
-    const { data } = await apiClient.post(`${BASE_PATH}/refresh`, { refreshToken });
+  refreshToken: async (
+    refreshToken: string,
+  ): Promise<ApiResponse<AuthTokens>> => {
+    const { data } = await apiClient.post(`${BASE_PATH}/refresh`, {
+      refreshToken,
+    });
     return data;
   },
 

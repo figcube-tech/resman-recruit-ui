@@ -1,18 +1,19 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { formResolver } from '@/lib/validations/resolver';
-import { loginSchema, LoginFormValues } from '@/lib/validations/auth';
-import { useAuthStore } from '@/store/useAuthStore';
-import { authApi } from '@/lib/api';
-import { getErrorMessage } from '@/lib/api/errors';
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
-import { APP_NAME } from '@/lib/constants';
-import { Briefcase } from 'lucide-react';
-import toast from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { formResolver } from "@/lib/validations/resolver";
+import { loginSchema, LoginFormValues } from "@/lib/validations/auth";
+import { useAuthStore } from "@/store/useAuthStore";
+import { authApi } from "@/lib/api";
+import { getErrorMessage } from "@/lib/api/errors";
+import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
+import { APP_NAME } from "@/lib/constants";
+import { Briefcase } from "lucide-react";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -32,8 +33,8 @@ export default function LoginPage() {
     try {
       const response = await authApi.login(values);
       login(response.data.user, response.data.tokens);
-      toast.success('Welcome back!');
-      router.push('/dashboard');
+      toast.success("Welcome back!");
+      router.push("/dashboard");
     } catch (error) {
       toast.error(getErrorMessage(error));
     } finally {
@@ -59,18 +60,29 @@ export default function LoginPage() {
               type="email"
               placeholder="you@company.com"
               error={errors.email?.message}
-              {...register('email')}
+              {...register("email")}
             />
             <Input
               label="Password"
               type="password"
               placeholder="Enter your password"
               error={errors.password?.message}
-              {...register('password')}
+              {...register("password")}
             />
             <Button type="submit" className="w-full" isLoading={isLoading}>
               Sign in
             </Button>
+
+            {/* Sign Up Link */}
+            <div className="text-center text-sm">
+              <span className="text-gray-600">Don't have an account? </span>
+              <Link
+                href="/register"
+                className="font-medium text-blue-600 hover:text-blue-700"
+              >
+                Sign up
+              </Link>
+            </div>
           </form>
         </div>
       </div>
